@@ -16,7 +16,7 @@
 typedef struct	s_data
 {
 	int	nb_philo;
-	int nb_meal;
+	int	nb_meal;
 	int	nb_meal_max;
 	int	time_die;
 	int	time_eat;
@@ -36,7 +36,6 @@ typedef struct	s_philo
 	t_fork			*fork_right;
 	t_fork			*fork_left;
 	pthread_mutex_t *print;
-	pthread_mutex_t *fm;
 }	t_philo;
 
 

@@ -19,5 +19,7 @@
 # include <pthread.h>
 # include <string.h>
 # include <sys/timeb.h>
-
+# define PHILO_EATING   "\033[1;38;5;255m[Philo %d] \033[1;38;5;240mis \033[1;38;5;82meating\033[0m\n"
+# define PHILO_SLEEPING "\033[1;38;5;255m[Philo %d] \033[1;38;5;240mis \033[1;38;5;68msleeping\033[0m\n"
+# define PHILO_THINKING "\033[1;38;5;255m[Philo %d] \033[1;38;5;240mis \033[1;38;5;50mthinking\033[0m\n"
 #endif
