@@ -11,8 +11,19 @@
 /* ************************************************************************** */
 
 #include "header.h"
+int	death_check(t_philo *philo)
+{
+	pthread_mutex_lock(philo->death_mt);
+	if (*philo->death == 1)
+	{
+		pthread_mutex_unlock(philo->death_mt);
+		return (1);
+	}
+	pthread_mutex_unlock(philo->death_mt);
+	return (0);
+}
 
-int	is_all_feed(t_philo *philo)
+int	meal_check(t_philo *philo)
 {
 	int	i;
 
@@ -20,116 +31,130 @@ int	is_all_feed(t_philo *philo)
 	while (i != philo->data.nb_philo)
 	{
 		if (philo[i].data.nb_meal < philo[i].data.nb_meal_max)
-			return (0);
+			return (1);
 		i++;
 	}
-	return (1);
+	return (0);
 }
 
-int	check_fork(t_philo *philo)
+long	get_time(void)
 {
-	pthread_mutex_lock(&philo->fork_left->fork);
-	if (philo->fork_left->used == 1)
-	{	
-		pthread_mutex_unlock(&philo->fork_left->fork);
-		return (1);
-	}
-	pthread_mutex_lock(&philo->fork_right->fork);
-	if (philo->fork_right->used == 1 || philo->fork_left->used == 1)
+	struct timeval	t;
+	static long		start_time;
+	long			time;
+
+	gettimeofday(&t, NULL);
+	time = t.tv_sec * 1000 + t.tv_usec / 1000;
+	if (start_time == 0)
+		start_time = time;
+	return (time - start_time);
+}
+
+void	print_message(t_philo *philo, char *msg)
+{
+	pthread_mutex_lock(philo->print_mt);
+	printf(msg, get_time(), philo->id + 1);
+	pthread_mutex_unlock(philo->print_mt);
+}
+
+void	fork_lock(t_philo *philo, int *end)
+{
+	pthread_mutex_lock(philo->fork_left);
+	if (!death_check(philo) && !meal_check(philo))
 	{
-		pthread_mutex_unlock(&philo->fork_right->fork);	
-		pthread_mutex_unlock(&philo->fork_left->fork);
-		return (1);
+		pthread_mutex_unlock(philo->fork_left);
+		*end = 0;
+		return ;
 	}
-	if (philo->fork_right->used == 0 && philo->fork_left->used == 0)
+	print_message(philo, PHILO_FORK);
+	pthread_mutex_lock(philo->fork_right);
+	if (!death_check(philo) && !meal_check(philo))
 	{
-		philo->fork_left->used = 1;
-		philo->fork_right->used = 1;
-		pthread_mutex_unlock(&philo->fork_right->fork);	
-		pthread_mutex_unlock(&philo->fork_left->fork);
-		return (0);
+		pthread_mutex_unlock(philo->fork_right);
+		pthread_mutex_unlock(philo->fork_left);
+		*end = 0;
+		return ;
 	}
-	pthread_mutex_unlock(&philo->fork_right->fork);
-	pthread_mutex_unlock(&philo->fork_left->fork);
-	return (0);
+	print_message(philo, PHILO_FORK);
+	return ;
 }
 
 void	*filo_eating_fork(void *ph)
 {
 	t_philo	*philo;
+	int		end;
 
+	end = 0;
 	philo = (t_philo *)ph;
-	while (!is_all_feed(philo))
+	while (!end)
 	{
-		while (check_fork(philo))
-			usleep(1000);
+		fork_lock(philo, &end);
+		print_message(philo, PHILO_EATING);
 		usleep(philo->data.time_eat);
-		pthread_mutex_lock(&philo->fork_left->fork);
-		philo->fork_left->used = 0;
-		pthread_mutex_unlock(&philo->fork_left->fork);
-		pthread_mutex_lock(&philo->fork_right->fork);
-		philo->fork_right->used = 0;
-		pthread_mutex_unlock(&philo->fork_right->fork);
-		pthread_mutex_lock(philo->print);
-		printf(PHILO_EATING, philo->id + 1);
-		pthread_mutex_unlock(philo->print);
+		pthread_mutex_lock(philo->meal_mt);
 		philo->data.nb_meal += 1;
+		pthread_mutex_unlock(philo->meal_mt);
+		print_message(philo, PHILO_SLEEPING);
 		usleep(philo->data.time_sleep);
-		pthread_mutex_lock(philo->print);
-		printf(PHILO_SLEEPING, philo->id + 1);
-		pthread_mutex_unlock(philo->print);
-		pthread_mutex_lock(philo->print);
-		printf(PHILO_THINKING, philo->id + 1);
-		pthread_mutex_unlock(philo->print);
+		print_message(philo, PHILO_THINKING);
 	}
 	return (NULL);
-}
-
-int	init_fork_right(int id, int id_max)
-{
-	if (id == id_max)
-		return (0);
-	return (id);
 }
 
 int	main(int ac, char **av)
 {
 	int				i;
+	int				death;
 	int				nb_philo;
-	t_fork			*forks;
 	t_data			data;
 	t_philo			**philo;
 	pthread_t		*thread;
-	pthread_mutex_t	print;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	print_mt;
+	pthread_mutex_t	meal_mt;
+	pthread_mutex_t	death_mt;
 
 	if (ac > 6)
 		return (0);
 	nb_philo = ft_atoi(av[1]);
 	data = (t_data) {nb_philo, 0, 5, 400, 500000, 500000};
 	philo = malloc(nb_philo * sizeof(t_philo *));
+	forks = malloc(nb_philo * sizeof(pthread_mutex_t));
 	thread = malloc(nb_philo * sizeof(pthread_t));
-	forks = malloc(nb_philo * sizeof(t_fork));
-	memset((void *) philo, 0, nb_philo * sizeof(t_philo));
+	memset((void *) philo, 0, nb_philo * sizeof(t_philo *));
 	memset((void *) thread, 0, nb_philo * sizeof(pthread_t));
-	memset((void *) forks, 0, nb_philo * sizeof(t_fork));
-	memset((void *) &print, 0, sizeof(pthread_mutex_t));
+	memset((void *) &print_mt, 0, sizeof(pthread_mutex_t));
+	memset((void *) &meal_mt, 0, sizeof(pthread_mutex_t));
+	memset((void *) &death_mt, 0, sizeof(pthread_mutex_t));
+	memset((void *) forks, 0, nb_philo * sizeof(pthread_mutex_t));
 	i = 0;
+	death = 0;
 	while (i < nb_philo)
 	{
 		philo[i] = malloc(sizeof(t_philo));
 		if (!philo[i])
 			return (0);
 		philo[i]->id = i;
-		philo[i]->print = &print;
+		philo[i]->death = &death;
 		philo[i]->data = data;
-		philo[i]->fork_left = &forks[i];
-		philo[i]->fork_right = &forks[(i + 1) % nb_philo];
+		if (i != nb_philo - 1)
+		{
+			philo[i]->fork_left = &forks[i];
+			philo[i]->fork_right = &forks[(i + 1) % nb_philo];
+		}
+		else
+		{
+			philo[i]->fork_right = &forks[i];
+			philo[i]->fork_left = &forks[(i + 1) % nb_philo];
+		}
+		philo[i]->meal_mt = &meal_mt;
+		philo[i]->print_mt = &print_mt;
+		philo[i]->death_mt = &death_mt;
 		pthread_create(&(thread[i]), NULL, filo_eating_fork, (void *)philo[i]);
 		i++;
 	}
 	i = -1;
 	while (++i != nb_philo)
 		pthread_join(thread[i], NULL);
-	(void)av;
 	return (1);
 }

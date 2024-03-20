@@ -23,20 +23,16 @@ typedef struct	s_data
 	int	time_sleep;
 }	t_data;
 
-typedef struct	s_fork
-{
-	pthread_mutex_t fork;
-	int				used;
-}	t_fork;
-
 typedef struct	s_philo
 {
 	int				id;
+	int				*death;
 	t_data			data;
-	t_fork			*fork_right;
-	t_fork			*fork_left;
-	pthread_mutex_t *print;
+	pthread_mutex_t	*fork_right;
+	pthread_mutex_t	*fork_left;
+	pthread_mutex_t *print_mt;
+	pthread_mutex_t	*meal_mt;
+	pthread_mutex_t	*death_mt;
 }	t_philo;
-
 
 #endif
