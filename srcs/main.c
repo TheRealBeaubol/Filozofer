@@ -11,10 +11,11 @@
 /* ************************************************************************** */
 
 #include "header.h"
+
 int	death_check(t_philo *philo)
 {
 	pthread_mutex_lock(philo->death_mt);
-	if (*philo->death == 1)
+	if (*philo->death == 0)
 	{
 		pthread_mutex_unlock(philo->death_mt);
 		return (1);
@@ -30,11 +31,11 @@ int	meal_check(t_philo *philo)
 	i = 0;
 	while (i != philo->data.nb_philo)
 	{
-		if (philo[i].data.nb_meal < philo[i].data.nb_meal_max)
-			return (1);
+		if (philo[i].data.nb_meal > philo[i].data.nb_meal_max)
+			return (0);
 		i++;
 	}
-	return (0);
+	return (1);
 }
 
 long	get_time(void)
@@ -59,38 +60,40 @@ void	print_message(t_philo *philo, char *msg)
 
 void	fork_lock(t_philo *philo, int *end)
 {
-	pthread_mutex_lock(philo->fork_left);
-	if (!death_check(philo) && !meal_check(philo))
-	{
-		pthread_mutex_unlock(philo->fork_left);
-		*end = 0;
-		return ;
-	}
-	print_message(philo, PHILO_FORK);
 	pthread_mutex_lock(philo->fork_right);
-	if (!death_check(philo) && !meal_check(philo))
+	if (!death_check(philo) || !meal_check(philo))
 	{
 		pthread_mutex_unlock(philo->fork_right);
-		pthread_mutex_unlock(philo->fork_left);
-		*end = 0;
+		*end = 1;
 		return ;
 	}
 	print_message(philo, PHILO_FORK);
+	pthread_mutex_lock(philo->fork_left);
+	if (!death_check(philo) || !meal_check(philo))
+	{
+		pthread_mutex_unlock(philo->fork_left);
+		pthread_mutex_unlock(philo->fork_right);
+		*end = 1;
+		return ;
+	}
+	print_message(philo, PHILO_FORK);
+	print_message(philo, PHILO_EATING);
+	usleep(philo->data.time_eat);
+	pthread_mutex_unlock(philo->fork_left);
+	pthread_mutex_unlock(philo->fork_right);
 	return ;
 }
 
-void	*filo_eating_fork(void *ph)
+void	*routine(void *ph)
 {
 	t_philo	*philo;
-	int		end;
 
-	end = 0;
 	philo = (t_philo *)ph;
-	while (!end)
+	while (*philo->end == 0)
 	{
-		fork_lock(philo, &end);
-		print_message(philo, PHILO_EATING);
-		usleep(philo->data.time_eat);
+		if (philo-> id % 2)
+			usleep(1000);
+		fork_lock(philo, philo->end);
 		pthread_mutex_lock(philo->meal_mt);
 		philo->data.nb_meal += 1;
 		pthread_mutex_unlock(philo->meal_mt);
@@ -105,6 +108,7 @@ int	main(int ac, char **av)
 {
 	int				i;
 	int				death;
+	int				end;
 	int				nb_philo;
 	t_data			data;
 	t_philo			**philo;
@@ -117,7 +121,7 @@ int	main(int ac, char **av)
 	if (ac > 6)
 		return (0);
 	nb_philo = ft_atoi(av[1]);
-	data = (t_data) {nb_philo, 0, 5, 400, 500000, 500000};
+	data = (t_data){nb_philo, 0, 2, 1000, 500, 500};
 	philo = malloc(nb_philo * sizeof(t_philo *));
 	forks = malloc(nb_philo * sizeof(pthread_mutex_t));
 	thread = malloc(nb_philo * sizeof(pthread_t));
@@ -129,6 +133,7 @@ int	main(int ac, char **av)
 	memset((void *) forks, 0, nb_philo * sizeof(pthread_mutex_t));
 	i = 0;
 	death = 0;
+	end = 0;
 	while (i < nb_philo)
 	{
 		philo[i] = malloc(sizeof(t_philo));
@@ -136,21 +141,22 @@ int	main(int ac, char **av)
 			return (0);
 		philo[i]->id = i;
 		philo[i]->death = &death;
+		philo[i]->end = &end;
 		philo[i]->data = data;
 		if (i != nb_philo - 1)
-		{
-			philo[i]->fork_left = &forks[i];
-			philo[i]->fork_right = &forks[(i + 1) % nb_philo];
-		}
-		else
 		{
 			philo[i]->fork_right = &forks[i];
 			philo[i]->fork_left = &forks[(i + 1) % nb_philo];
 		}
+		else
+		{
+			philo[i]->fork_left = &forks[i];
+			philo[i]->fork_right = &forks[(i + 1) % nb_philo];
+		}
 		philo[i]->meal_mt = &meal_mt;
 		philo[i]->print_mt = &print_mt;
 		philo[i]->death_mt = &death_mt;
-		pthread_create(&(thread[i]), NULL, filo_eating_fork, (void *)philo[i]);
+		pthread_create(&(thread[i]), NULL, routine, (void *)philo[i]);
 		i++;
 	}
 	i = -1;

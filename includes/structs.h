@@ -13,7 +13,7 @@
 #ifndef STRUCTS_H
 # define STRUCTS_H
 
-typedef struct	s_data
+typedef struct s_data
 {
 	int	nb_philo;
 	int	nb_meal;
@@ -23,14 +23,15 @@ typedef struct	s_data
 	int	time_sleep;
 }	t_data;
 
-typedef struct	s_philo
+typedef struct s_philo
 {
 	int				id;
 	int				*death;
+	int				*end;
 	t_data			data;
 	pthread_mutex_t	*fork_right;
 	pthread_mutex_t	*fork_left;
-	pthread_mutex_t *print_mt;
+	pthread_mutex_t	*print_mt;
 	pthread_mutex_t	*meal_mt;
 	pthread_mutex_t	*death_mt;
 }	t_philo;

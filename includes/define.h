@@ -20,9 +20,12 @@
 # include <string.h>
 # include <sys/time.h>
 
-
-# define PHILO_FORK		"\033[1;255m ╿ 🕒 %d \033[1;255m╿ 	🧙 %d \033[1;38;5;240mhas taken a \033[1;38;5;120mfork\033[0m\n"
-# define PHILO_EATING	"\033[1;255m ╿ 🕒 %d \033[1;255m╿ 	🧙 %d \033[1;38;5;240mis \033[1;38;5;82meating\033[0m\n"
-# define PHILO_SLEEPING	"\033[1;255m ╿ 🕒 %d \033[1;255m╿ 	🧙 %d \033[1;38;5;240mis \033[1;38;5;68msleeping\033[0m\n"
-# define PHILO_THINKING	"\033[1;255m ╿ 🕒 %d \033[1;255m╿ 	🧙 %d \033[1;38;5;240mis \033[1;38;5;50mthinking\033[0m\n"
+# define PHILO_FORK		"\033[1;255m ╿ 🕒 %d \033[1;255m╿ \
+🧙 %d \033[1;38;5;240mhas taken a \033[1;38;5;120mfork\033[0m\n"
+# define PHILO_EATING	"\033[1;255m ╿ 🕒 %d \033[1;255m╿ \
+🧙 %d \033[1;38;5;240mis \033[1;38;5;82meating\033[0m\n"
+# define PHILO_SLEEPING	"\033[1;255m ╿ 🕒 %d \033[1;255m╿ \
+🧙 %d \033[1;38;5;240mis \033[1;38;5;68msleeping\033[0m\n"
+# define PHILO_THINKING	"\033[1;255m ╿ 🕒 %d \033[1;255m╿ \
+🧙 %d \033[1;38;5;240mis \033[1;38;5;50mthinking\033[0m\n"
 #endif
