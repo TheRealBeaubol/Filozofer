@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:04:15 by lboiteux          #+#    #+#             */
-/*   Updated: 2024/03/22 16:03:36 by lboiteux         ###   ########.fr       */
+/*   Updated: 2024/03/22 20:51:00 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ t_data	fill_data(int ac, char **av)
 	data.time_sleep = philo_atoi(av[4]);
 	if (ac == 6)
 		data.nb_meal_max = philo_atoi(av[5]);
+	else
+		data.nb_meal_max = -2;
 	data.nb_meal = 0;
 	data.last_meal = 0;
 	return (data);

@@ -110,20 +110,23 @@ int	main(int ac, char **av)
 	t_data			data;
 	t_philo			**philo;
 
-	if ((ac < 5) || (ac > 6))
+	if ((ac == 5) || (ac == 6))
+	{
+		data = fill_data(ac, av);
+		if (data.nb_philo == -1 || data.time_die == -1 || data.time_eat \
+		== -1 || data.time_sleep == -1 || data.nb_meal_max == -1)
+		{
+			printf(ERROR_MSG);
+			return (0);
+		}
+		philo = malloc(data.nb_philo * sizeof(t_philo *));
+		memset(philo, 0, data.nb_philo * sizeof(t_philo *));
+		init_philo(philo, data);
+	}
+	else
 	{
 		printf(ERROR_MSG);
 		return (0);
 	}
-	data = fill_data(ac, av);
-	if (data.nb_philo == -1 || data.time_die == -1 || data.time_eat == -1 || \
-		data.time_sleep == -1 || data.nb_meal_max == -1)
-	{
-		printf(ERROR_MSG);
-		return (0);
-	}
-	philo = malloc(data.nb_philo * sizeof(t_philo *));
-	memset(philo, 0, data.nb_philo * sizeof(t_philo *));
-	init_philo(philo, data);
 	return (1);
 }

@@ -33,6 +33,11 @@ int	meal_check(t_philo **philo)
 	MUTEX_LOCK((*philo)->meal_mt);
 	while (i < (*philo)->data.nb_philo)
 	{
+		if ((philo[i])->data.nb_meal_max == -2)
+		{
+			MUTEX_UNLOCK((*philo)->meal_mt);
+			return (1);
+		}
 		if ((philo[i])->data.nb_meal < (philo[i])->data.nb_meal_max)
 		{
 			MUTEX_UNLOCK((*philo)->meal_mt);
@@ -40,7 +45,9 @@ int	meal_check(t_philo **philo)
 		}
 		i++;
 	}
+	MUTEX_UNLOCK((*philo)->death_mt);
 	*(*philo)->death = 1;
+	MUTEX_UNLOCK((*philo)->death_mt);
 	MUTEX_UNLOCK((*philo)->meal_mt);
 	return (0);
 }
