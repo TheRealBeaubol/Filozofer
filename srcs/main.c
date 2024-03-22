@@ -16,6 +16,12 @@ void	fork_lock(t_philo *philo)
 {
 	MUTEX_LOCK(philo->fork_left);
 	print_message(philo, PHILO_FORK);
+	if (philo->data.nb_philo == 1)
+	{
+		MUTEX_UNLOCK(philo->fork_left);
+		sleep_philo(philo->data.time_die);
+		return ;
+	}
 	MUTEX_LOCK(philo->fork_right);
 	print_message(philo, PHILO_FORK);
 	print_message(philo, PHILO_EATING);
@@ -34,7 +40,11 @@ void	*routine(void *ph)
 	philo = (t_philo *)ph;
 	while (1)
 	{
+		if (philo->data.nb_philo % 2)
+			usleep(100);
 		fork_lock(philo);
+		if (philo->data.nb_philo == 1)
+			break ;
 		MUTEX_LOCK(philo->meal_mt);
 		philo->data.nb_meal += 1;
 		MUTEX_UNLOCK(philo->meal_mt);
@@ -97,16 +107,23 @@ void	start_simulation(t_philo **philo)
 
 int	main(int ac, char **av)
 {
-	int				nb_philo;
 	t_data			data;
 	t_philo			**philo;
 
-	if (ac > 6)
+	if ((ac < 5) || (ac > 6))
+	{
+		printf(ERROR_MSG);
 		return (0);
-	nb_philo = ft_atoi(av[1]);
-	data = (t_data){7, nb_philo, 0, 0, 401, 200, 200};
-	philo = malloc(nb_philo * sizeof(t_philo *));
-	memset(philo, 0, nb_philo * sizeof(t_philo *));
+	}
+	data = fill_data(ac, av);
+	if (data.nb_philo == -1 || data.time_die == -1 || data.time_eat == -1 || \
+		data.time_sleep == -1 || data.nb_meal_max == -1)
+	{
+		printf(ERROR_MSG);
+		return (0);
+	}
+	philo = malloc(data.nb_philo * sizeof(t_philo *));
+	memset(philo, 0, data.nb_philo * sizeof(t_philo *));
 	init_philo(philo, data);
 	return (1);
 }

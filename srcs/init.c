@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 13:18:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2024/03/22 13:56:20 by lboiteux         ###   ########.fr       */
+/*   Updated: 2024/03/22 16:02:51 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,20 @@ void	init_forks(t_philo **philo)
 	memset(forks, 0, (*philo)->data.nb_philo * sizeof(T_MUTEX));
 	while (++i < (*philo)->data.nb_philo)
 	{
-		if (i != (*philo)->data.nb_philo - 1)
-		{
-			philo[i]->fork_left = &forks[i];
-			philo[i]->fork_right = &forks[(i + 1) % (*philo)->data.nb_philo];
-		}
-		else
+		if (i == (*philo)->data.nb_philo - 1)
 		{
 			philo[i]->fork_left = &forks[(i + 1) % (*philo)->data.nb_philo];
 			philo[i]->fork_right = &forks[i];
+		}
+		else if ((*philo)->data.nb_philo == 1)
+		{
+			philo[i]->fork_left = &forks[i];
+			philo[i]->fork_right = NULL;
+		}
+		else
+		{
+			philo[i]->fork_left = &forks[i];
+			philo[i]->fork_right = &forks[(i + 1) % (*philo)->data.nb_philo];
 		}
 	}
 }

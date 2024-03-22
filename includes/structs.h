@@ -15,13 +15,13 @@
 
 typedef struct s_data
 {
-	int		nb_meal_max;
 	int		nb_philo;
-	int		nb_meal;
-	long	last_meal;
 	int		time_die;
 	int		time_eat;
 	int		time_sleep;
+	int		nb_meal_max;
+	int		nb_meal;
+	long	last_meal;
 }	t_data;
 
 typedef struct s_philo

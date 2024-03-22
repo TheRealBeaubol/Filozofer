@@ -70,20 +70,11 @@ int	death_check(t_philo *philo)
 
 void	print_message(t_philo *philo, char *msg)
 {
-	static int	end;
-
 	MUTEX_LOCK(philo->death_mt);
-	end = 0;
-	if (*philo->death == 1)
-		end = 1;
-	if (end == 0)
-	{
-		MUTEX_UNLOCK(philo->death_mt);
-		MUTEX_LOCK(philo->print_mt);
+	MUTEX_LOCK(philo->print_mt);
+	if (!(*philo->death))
 		printf(msg, get_time(), philo->id + 1);
-		MUTEX_UNLOCK(philo->print_mt);
-		return ;
-	}
+	MUTEX_UNLOCK(philo->print_mt);
 	MUTEX_UNLOCK(philo->death_mt);
 }
 

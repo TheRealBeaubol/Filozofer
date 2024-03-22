@@ -16,7 +16,6 @@
 # include "define.h"
 # include "structs.h"
 
-int		ft_atoi(const char *nptr);
 long	get_time(void);
 int		meal_check(t_philo **philo);
 int		death_check(t_philo *philo);
@@ -25,5 +24,6 @@ void	init_forks(t_philo **philo);
 void	init_philo(t_philo **philo, t_data data);
 void	start_simulation(t_philo **philo);
 void	sleep_philo(int type);
+t_data	fill_data(int ac, char **av);
 
 #endif
