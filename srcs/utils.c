@@ -12,27 +12,86 @@
 
 #include "header.h"
 
-int	ft_atoi(const char *nptr)
+long	get_time(void)
+{
+	struct timeval	t;
+	static long		start_time;
+	long			time;
+
+	gettimeofday(&t, NULL);
+	time = t.tv_sec * 1000 + t.tv_usec / 1000;
+	if (start_time == 0)
+		start_time = time;
+	return (time - start_time);
+}
+
+int	meal_check(t_philo **philo)
 {
 	int	i;
-	int	stock;
-	int	sign;
 
-	sign = 1;
 	i = 0;
-	stock = 0;
-	while ((9 <= nptr[i] && nptr[i] <= 13) || nptr[i] == 32)
-		i++;
-	if (nptr[i] == '-' || nptr[i] == '+')
+	MUTEX_LOCK((*philo)->meal_mt);
+	while (i < (*philo)->data.nb_philo)
 	{
-		if (nptr[i] == '-')
-			sign *= -1;
+		if ((philo[i])->data.nb_meal < (philo[i])->data.nb_meal_max)
+		{
+			MUTEX_UNLOCK((*philo)->meal_mt);
+			return (1);
+		}
 		i++;
 	}
-	while (nptr[i] != 0 && nptr[i] >= '0' && nptr[i] <= '9')
+	*(*philo)->death = 1;
+	MUTEX_UNLOCK((*philo)->meal_mt);
+	return (0);
+}
+
+int	death_check(t_philo *philo)
+{
+	MUTEX_LOCK(philo->meal_mt);
+	if (get_time() - philo->data.last_meal >= philo->data.time_die)
 	{
-		stock = (stock * 10) + (nptr[i] - 48);
-		i++;
+		MUTEX_UNLOCK(philo->meal_mt);
+		print_message(philo, PHILO_DIED);
+		MUTEX_LOCK(philo->death_mt);
+		*philo->death = 1;
+		MUTEX_UNLOCK(philo->death_mt);
+		return (0);
 	}
-	return (stock * sign);
+	MUTEX_UNLOCK(philo->meal_mt);
+	MUTEX_LOCK(philo->death_mt);
+	if (*philo->death == 0)
+	{
+		MUTEX_UNLOCK(philo->death_mt);
+		return (1);
+	}
+	MUTEX_UNLOCK(philo->death_mt);
+	return (0);
+}
+
+void	print_message(t_philo *philo, char *msg)
+{
+	static int	end;
+
+	MUTEX_LOCK(philo->death_mt);
+	end = 0;
+	if (*philo->death == 1)
+		end = 1;
+	if (end == 0)
+	{
+		MUTEX_UNLOCK(philo->death_mt);
+		MUTEX_LOCK(philo->print_mt);
+		printf(msg, get_time(), philo->id + 1);
+		MUTEX_UNLOCK(philo->print_mt);
+		return ;
+	}
+	MUTEX_UNLOCK(philo->death_mt);
+}
+
+void	sleep_philo(int type)
+{
+	long	start_time;
+
+	start_time = get_time();
+	while (get_time() - start_time < type)
+		usleep(100);
 }

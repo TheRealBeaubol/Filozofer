@@ -26,14 +26,14 @@ typedef struct s_data
 
 typedef struct s_philo
 {
-	int				id;
-	int				*death;
-	t_data			data;
-	pthread_mutex_t	*fork_right;
-	pthread_mutex_t	*fork_left;
-	pthread_mutex_t	*print_mt;
-	pthread_mutex_t	*meal_mt;
-	pthread_mutex_t	*death_mt;
+	int		id;
+	int		*death;
+	t_data	data;
+	T_MUTEX	*fork_right;
+	T_MUTEX	*fork_left;
+	T_MUTEX	*print_mt;
+	T_MUTEX	*meal_mt;
+	T_MUTEX	*death_mt;
 }	t_philo;
 
 #endif

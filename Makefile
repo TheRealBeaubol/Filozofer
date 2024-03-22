@@ -45,6 +45,8 @@ RM					= 	@rm -rf
 #SOURCES
 SRCS	= 	srcs/main.c \
 				srcs/utils.c \
+				srcs/init.c \
+				srcs/parsing.c \
 # OBJECTS
 
 OBJS_DIR	:=	.objs

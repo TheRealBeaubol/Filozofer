@@ -30,4 +30,9 @@
 🧙 %d \033[1;38;5;240mis \033[1;38;5;50mthinking\033[0m\n"
 # define PHILO_DIED	"\033[41m\033[1;255m ╿ 🕒 %-6d \033[1;255m╿ \
 🧙 %d \033[1;41mdied\033[0m\n"
+
+# define MUTEX_LOCK         pthread_mutex_lock
+# define MUTEX_UNLOCK       pthread_mutex_unlock
+# define T_MUTEX            pthread_mutex_t
+
 #endif
