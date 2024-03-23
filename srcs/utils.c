@@ -45,7 +45,7 @@ int	meal_check(t_philo **philo)
 		}
 		i++;
 	}
-	MUTEX_UNLOCK((*philo)->death_mt);
+	MUTEX_LOCK((*philo)->death_mt);
 	*(*philo)->death = 1;
 	MUTEX_UNLOCK((*philo)->death_mt);
 	MUTEX_UNLOCK((*philo)->meal_mt);

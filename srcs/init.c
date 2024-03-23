@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 13:18:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2024/03/22 16:02:51 by lboiteux         ###   ########.fr       */
+/*   Updated: 2024/03/23 17:03:16 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,14 @@ void	init_forks(t_philo **philo)
 			philo[i]->fork_left = &forks[(i + 1) % (*philo)->data.nb_philo];
 			philo[i]->fork_right = &forks[i];
 		}
-		else if ((*philo)->data.nb_philo == 1)
-		{
-			philo[i]->fork_left = &forks[i];
-			philo[i]->fork_right = NULL;
-		}
 		else
 		{
 			philo[i]->fork_left = &forks[i];
 			philo[i]->fork_right = &forks[(i + 1) % (*philo)->data.nb_philo];
 		}
 	}
+	start_simulation(philo);
+	free_and_exit_philo(philo, (*philo)->data.nb_philo, forks);
 }
 
 void	init_philo(t_philo **philo, t_data data)
@@ -66,5 +63,15 @@ void	init_philo(t_philo **philo, t_data data)
 		philo[i]->data = data;
 	}
 	init_forks(philo);
-	start_simulation(philo);
+}
+
+void	free_and_exit_philo(t_philo **philo, int n, T_MUTEX *forks)
+{
+	int	i;
+
+	i = -1;
+	free(forks);
+	while (++i < n)
+		free(philo[i]);
+	free(philo);
 }

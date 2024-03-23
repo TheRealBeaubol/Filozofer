@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:04:15 by lboiteux          #+#    #+#             */
-/*   Updated: 2024/03/22 20:51:00 by lboiteux         ###   ########.fr       */
+/*   Updated: 2024/03/23 16:56:58 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ int	philo_atoi(char *nptr)
 	while (nptr[i] != '\0' && isdigit(nptr[i]))
 		stock = (stock * 10) + (nptr[i++] - 48);
 	if (!isdigit(nptr[i]) && nptr[i] != '\0')
+		return (-1);
+	if (stock == 0)
 		return (-1);
 	return (stock);
 }

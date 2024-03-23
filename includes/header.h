@@ -25,5 +25,6 @@ void	init_philo(t_philo **philo, t_data data);
 void	start_simulation(t_philo **philo);
 void	sleep_philo(int type);
 t_data	fill_data(int ac, char **av);
+void	free_and_exit_philo(t_philo **philo, int n, T_MUTEX *forks);
 
 #endif

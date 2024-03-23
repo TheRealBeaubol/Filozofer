@@ -103,6 +103,7 @@ void	start_simulation(t_philo **philo)
 	i = -1;
 	while (++i != (*philo)->data.nb_philo)
 		pthread_join(thread[i], NULL);
+	free(thread);
 }
 
 int	main(int ac, char **av)

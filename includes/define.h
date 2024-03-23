@@ -32,11 +32,11 @@
 🧙 %d \033[1;41mdied\033[0m\n"
 
 # define ERROR_MSG "\033[1;31mWrong arguments ! \033[0;31mArguments must be formated as follows :\n\
-\033[1;31m[1] \033[0m\033[1;255m number_of_philosophers \033[0;255m(a number between \033[1;255m0\033[0;255m and \033[1;255m2147483647\033[0;255m)\033[0m\n\
-\033[1;31m[2] \033[0m\033[1;255m time_to_die \033[0;255m(a number between \033[1;255m0\033[0;255m and \033[1;255m2147483647\033[0;255m)\033[0m\n\
-\033[1;31m[3] \033[0m\033[1;255m time_to_eat \033[0;255m(a number between \033[1;255m0\033[0;255m and \033[1;255m2147483647\033[0;255m)\033[0m\n\
-\033[1;31m[4] \033[0m\033[1;255m time_to_sleep \033[0;255m(a number between \033[1;255m0\033[0;255m and \033[1;255m2147483647\033[0;255m)\033[0m\n\
-\033[1;31m[5] \033[0m\033[1;255m number_of_times_each_philosopher_must_eat \033[0;255m(a number between \033[1;255m0\033[0;255m and \
+\033[1;31m[1] \033[0m\033[1;255m number_of_philosophers \033[0;255m(a number between \033[1;255m1\033[0;255m and \033[1;255m2147483647\033[0;255m)\033[0m\n\
+\033[1;31m[2] \033[0m\033[1;255m time_to_die \033[0;255m(a number between \033[1;255m1\033[0;255m and \033[1;255m2147483647\033[0;255m)\033[0m\n\
+\033[1;31m[3] \033[0m\033[1;255m time_to_eat \033[0;255m(a number between \033[1;255m1\033[0;255m and \033[1;255m2147483647\033[0;255m)\033[0m\n\
+\033[1;31m[4] \033[0m\033[1;255m time_to_sleep \033[0;255m(a number between \033[1;255m1\033[0;255m and \033[1;255m2147483647\033[0;255m)\033[0m\n\
+\033[1;31m[5] \033[0m\033[1;255m number_of_times_each_philosopher_must_eat \033[0;255m(a number between \033[1;255m1\033[0;255m and \
 \033[1;255m2147483647\033[0;255m)\033[1;31m (optional)\033[0m\n"
 
 # define MUTEX_LOCK         pthread_mutex_lock
