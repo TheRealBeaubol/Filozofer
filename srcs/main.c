@@ -38,10 +38,10 @@ void	*routine(void *ph)
 	t_philo	*philo;
 
 	philo = (t_philo *)ph;
+	if (philo->data.nb_philo % 2)
+		usleep(100);
 	while (1)
 	{
-		if (philo->data.nb_philo % 2)
-			usleep(100);
 		fork_lock(philo);
 		if (philo->data.nb_philo == 1)
 			break ;
@@ -95,6 +95,8 @@ void	start_simulation(t_philo **philo)
 
 	get_time();
 	thread = malloc((*philo)->data.nb_philo * sizeof(pthread_t));
+	if (!thread)
+		return ;
 	memset(thread, 0, (*philo)->data.nb_philo * sizeof(pthread_t));
 	i = -1;
 	while (++i < (*philo)->data.nb_philo)
@@ -121,6 +123,8 @@ int	main(int ac, char **av)
 			return (0);
 		}
 		philo = malloc(data.nb_philo * sizeof(t_philo *));
+		if (!philo)
+			return (0);
 		memset(philo, 0, data.nb_philo * sizeof(t_philo *));
 		init_philo(philo, data);
 	}

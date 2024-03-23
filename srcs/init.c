@@ -6,7 +6,7 @@
 /*   By: lboiteux <lboiteux@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 13:18:55 by lboiteux          #+#    #+#             */
-/*   Updated: 2024/03/23 17:03:16 by lboiteux         ###   ########.fr       */
+/*   Updated: 2024/03/23 21:31:44 by lboiteux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ void	init_forks(t_philo **philo)
 
 	i = -1;
 	forks = malloc((*philo)->data.nb_philo * sizeof(T_MUTEX));
+	if (!forks)
+		return ;
 	memset(forks, 0, (*philo)->data.nb_philo * sizeof(T_MUTEX));
 	while (++i < (*philo)->data.nb_philo)
 	{
