@@ -55,7 +55,7 @@ int	meal_check(t_philo **philo)
 int	death_check(t_philo *philo)
 {
 	MUTEX_LOCK(philo->meal_mt);
-	if (get_time() - philo->data.last_meal >= philo->data.time_die)
+	if (get_time() - philo->data.last_meal > philo->data.time_die)
 	{
 		MUTEX_UNLOCK(philo->meal_mt);
 		print_message(philo, PHILO_DIED);
